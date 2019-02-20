@@ -1,0 +1,289 @@
+<div class="easyui-layout" data-options="fit:true">
+    <div id="dlg-toolbar-report" class="easyui-datagrid-toolbar">
+        <table cellpadding="0" cellspacing="0" style="width:100%">
+            <tr>
+                <td>
+                    <!--plain:true:显示简洁效果。-->
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onClick="add_report_window()">{lang but_add}</a>
+                    <a href="#" class="easyui-linkbutton" id='report_edit' data-options="iconCls:'icon-edit',plain:true" onClick="edit_report_window()" disabled="true">{lang but_edit}</a>
+                    <a href="#" class="easyui-linkbutton" id='report_delete' data-options="iconCls:'icon-delete',plain:true" onClick="delete_btn_report()" disabled="true">{lang but_delete}</a>
+                    <a href="#" class="easyui-linkbutton" id='report_download' data-options="iconCls:'icon-export',plain:true" onClick="report_info()" disabled="true">{lang but_export}</a>
+                </td>
+                <td style="text-align:left;padding-left:2px">
+                    <div id="probar_report" class="test" style="display:none;padding-left: 20px">
+                        <div id="p_report" class="easyui-progressbar" data-options="value:0" style="width:300px; float:left"></div>{lang report_waiting}
+                    </div>
+                </td>
+                <td style="text-align:right;padding-right:2px">
+                    <input type="text" id="addName" name="add_Name" class="input_length input_search">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'center',border:true" class="card_div">
+        <table id="ttre" title="{lang tree_policy_report}" style=" width:100%"></table>
+    </div>
+</div>
+<script type="text/javascript" charset="utf-8">
+$(function() {
+    $('#dlg-toolbar-report').css("visibility", "visible");
+    $('#ttre').datagrid({
+        // idField: 'id',       //只要创建数据表格 就必须要加 ifField
+        //title:'告警列表',
+        fitColumns: true, //让列宽自动适应数据表格的宽度
+        nowrap: true, //设置为true，当数据长度超出列宽时将会自动截取。//折行显示 为true 显示在一行
+        striped: true, //隔行变色
+        // sortName: 'name',                            //当数据表格初始化时以哪一列来排序。
+        // sortOrder: 'asc',                            //定义排序顺序，可以是'asc'或者'desc'（正序或者倒序）。
+        //remoteSort: false,
+        url: '?module=waf_report&action=showall_report',
+
+        fit: true, //设置为true时，面版的大小将铺满它所在的容器（浏览器）
+        border: false, //定义是否显示panel面板边框。
+        //remoteSort: false,    //定义是否通过远程服务器对数据排序。
+        frozenColumns: [
+            [{
+                field: 'ck',
+                checkbox: true
+            }]
+        ], //列复选框
+
+
+        /*
+         {"name":"report1","schedule":"monthly","attime":"","weekdays":"","monthdays":"No1 No21 No31","formats":"txt","title":"","body":"","mail_policy":""}
+         */
+        columns: [
+            [{
+                    field: 'name',
+                    title: '{lang name}',
+                    width: 225,
+                    sortable: true
+                },
+                //{field: 'formats', title: '报表类型', width: 225},
+                {
+                    field: 'title',
+                    title: '{lang report_mail_title}',
+                    width: 300
+                },
+
+                {
+                    field: 'schedule',
+                    title: '{lang report_schedule}',
+                    width: 300,
+                    formatter: function(value) {
+                        if (value == 'none') {
+                            return '{lang none}';
+                        } else if (value == 'daily') {
+                            return '{lang tree_resource_date}';
+                        } else if (value == 'weekly') {
+                            return '{lang tree_resource_week}';
+                        } else if (value == "monthly") {
+                            return '{lang tree_resource_month}';
+                        }
+                    }
+                }, {
+                    field: 'attime',
+                    title: '{lang report_attime}',
+                    width: 300
+                },
+
+                {
+                    field: 'weekdays',
+                    title: '{lang report_weekdays}',
+                    width: 300,
+                    formatter: weekday_trans
+
+                },
+
+
+                {
+                    field: 'mail_policy',
+                    title: '{lang report_mail_policy}',
+                    width: 300,
+                    formatter: function(value) {
+                        if (value == '') {
+                            return '{lang none}';
+                        } else {
+                            return value;
+
+                        }
+                    }
+                }
+
+
+                /* {field: 'oper', title: '操作', width: 200,align:'center',
+                     formatter: function (value, rowData, rowIndex) {
+                         return '<a href="#" onClick="edit_row(\'' + rowData.name + '\',\'' + $.trim(rowData.formats) + '\',\'' + $.trim(rowData.title) + '\',\'' + $.trim(rowData.schedule) + '\',\'' + $.trim(rowData.attime) + '\',\'' + $.trim(rowData.weekdays) + '\',\'' + $.trim(rowData.monthdays) + '\',\'' + $.trim(encodeURIComponent(rowData.body)) + '\',\'' + $.trim(rowData.mail_policy) + '\',\'admin1\');"><img src="/../../static/images/icons/icon_edit.png" title="编辑"></a>';
+                     }
+                 }*/
+            ]
+        ],
+        onDblClickRow: edit_report_window,
+        onLoadError: function() {
+            ngtosPopMessager("error", "{lang msg_timeout}", "login");
+        },
+        pagination: true, //设置true将在数据表格底部显示分页工具栏。
+        pageSize: 20, //当设置分页属性时，初始化每页记录数。
+        pageList: [20, 50, 100], //当设置分页属性时，初始化每页记录数列表。
+        rownumbers: true,
+        ctrlSelect: true, //设置为true将显示行数。
+        loadMsg: "{lang waiting}", //当从远程站点载入数据时，显示的一条快捷信息。
+        toolbar: "#dlg-toolbar-report", //新增和删除按钮
+        checkOnSelect: true, //如果为true，该复选框被选中/取消选中，当用户点击某一行上。
+        //如果为false，该复选框仅检查/取消选中，当用户点击完全的复选框。
+        onCheckAll: set_toolbar_report, //监听checkbox全选
+        onUncheckAll: set_toolbar_report, //监听checkbox取消全选
+        onSelect: set_toolbar_report, //监听行选中
+        onUnselect: set_toolbar_report, //监听行取消选中
+        onLoadSuccess: function() {
+            set_toolbar_report();
+            //search();
+        },
+
+        onHeaderContextMenu: createGridHeaderContextMenu //右键点击数据表格的列标题触发隐藏或显示此列
+    });
+    $('.input_search').wsearchBox({
+        clearfn: search_data_report,
+        searchfn: search_data_report
+    });
+    keyEnterBindSearchEvent("addName", search_data_report);
+    initValidateboxStyle();
+
+})
+
+
+var bar_num = 0;
+var interval = "";
+
+function set_probar(i) {
+    $('#p_report').progressbar('setValue', parseInt(i));
+    if (i == 99) {
+        clearInterval(interval);
+    }
+    bar_num++;
+}
+
+function self_action() {
+
+    $.ajax({
+        url: '/modules/waf/report_down.php',
+        type: 'post',
+        data: {
+            time: 'event_percent_hour',
+            time2: 'ip_percent_hour',
+            time3: 'ruleid_percent_hour'
+
+        }
+    });
+}
+
+
+
+function report_info() {
+    if ($('#wwreport').length <= 0) {
+        $(document.body).append("<div id='wwreport' class='ngtos_window'></div>")
+    }
+    open_window('wwreport', 'waf_report ', 'add_report_info', jslang.report.report_sure, 'true', info_default); //打开弹出框
+}
+
+function info_default(data) {
+    var row = $("#ttre").datagrid("getSelected"),
+          name = row.name;
+    $.ajax({
+        url: '?module=waf_report&action=get_username',
+        type: 'post',
+        data:{name:name},
+        success: function(data) {
+            data = JSON.parse(data);
+            $("#info_reporter").textbox('setValue', data.username);
+            if (data.report_lan == 'english') {        
+                $("#info_title").textbox('setValue', 'WAF Report');
+                $("#info_header").textbox('setValue', "{$info_header}");
+            }else{
+                $("#info_title").textbox('setValue', 'WAF报表');
+                $("#info_header").textbox('setValue', "{$info_header}");
+            }
+
+        }
+    });
+}
+
+
+
+function report_down() {
+
+    $('#report_download').linkbutton('disable');
+    var rowSel = $('#ttre').datagrid('getSelections');
+    var name = rowSel[0].name;
+    var isShowLogo = $("input:radio[name=isShowLogo]:checked").val(),
+        infoTitle = $("#info_title").val(),
+        infoHeader = $("#info_header").val(),
+        infoReporter = $("#info_reporter").val(),
+        rowSel = $('#ttre').datagrid('getSelections'),
+        schedule = rowSel[0].schedule,
+        data = {
+            time: 'event_percent_hour',
+            time2: 'ip_percent_hour',
+            time3: 'ruleid_percent_hour',
+            isShowLogo: isShowLogo,
+            infoTitle: infoTitle,
+            infoHeader: infoHeader,
+            infoReporter: infoReporter,
+            schedule: schedule,
+            name:name
+        };
+    $("#wwreport").window('close');
+    document.getElementById("probar_report").style.display = "inline";
+
+    interval = setInterval(function() {
+        set_probar(bar_num);
+    }, 150);
+    //alert(rowSel[0].schedule);
+    $.ajax({
+        //url: '/modules/waf/report_down.php',
+        url: '?module=waf_report_waf',
+        type: 'post',
+        data: data,
+        dataType: 'json',
+        success: function(data, status) {
+            clearInterval(interval);
+            $('#p_report').progressbar('setValue', parseInt(100));
+            document.getElementById("probar_report").style.display = "none";
+            bar_num = 0;
+
+            $('#report_download').linkbutton('enable');
+
+            if (data.type == 0) {
+                var rows = $('#ttre').datagrid('getSelections');
+                var filenames = rows[0].name;
+                var form = $('<form>'); //定义一个form表单
+                form.attr('style', 'display:none');
+                form.attr('target', '');
+                form.attr('method', 'post');
+                form.attr('action', '?module=monitor_monitor&action=download_report1');
+                var input1 = $('<input>');
+                input1.attr('type', 'hidden');
+                input1.attr('name', 'name');
+
+                //input1.attr('value',rows[0].filename);
+                input1.attr('value', filenames);
+                var input_username = $('<input>');
+                input_username.attr('type', 'hidden');
+                input_username.attr('name', 'username');
+                input_username.attr('value', $.cookie('username'));
+                //var input_hidden='<input type="hidden" name="submit_post" value="system_config_file_export">';
+                $('body').append(form); //将表单放置在web中
+                form.append(input1);
+                form.append(input_username);
+                //form.append(input_hidden);
+                form.submit(); //表单提交
+                form.remove();
+            } else {
+                ngtosPopMessager("error", "生成文件失败");
+            }
+
+        }
+    });
+
+}
+</script>

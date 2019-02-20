@@ -1,0 +1,154 @@
+<div class="ngtos_form_main">
+    <form id="ffre" method="post">
+        <table class="ngtos_form_table">
+            <tr>
+                <td class="tdlabel" width="120px">{lang name}</td>
+                <td>
+                    <input type="text" id="report_name" name="report_name" size="30" class="easyui-textbox input_length" data-options="required:true,missingMessage:'{lang missingMessage}',validType:'objectNameRule'"><span style=" color:#FF0000">&nbsp;&nbsp;&nbsp;</span></td>
+            </tr>
+            <tr>
+                <td class="tdlabel">{lang report_schedule}</td>
+                <td>
+                    <input type="radio" id="schedule_none" name="schedule" onClick="change_type_report('none')" value="none" checked="checked">
+                    <label for="schedule_none">{lang none}</label>
+                    <input type="radio" id="schedule_daily" name="schedule" onClick="change_type_report('daily')" value="daily">
+                    <label for="schedule_daily">{lang tree_resource_date}</label>
+                    <input type="radio" id="schedule_weekly" name="schedule" onClick="change_type_report('weekly')" value="weekly">
+                    <label for="schedule_weekly">{lang tree_resource_week}</label>
+                    <input type="radio" id="schedule_monthly" name="schedule" onClick="change_type_report('monthly')" value="monthly">
+                    <label for="schedule_monthly" id="report_month">{lang tree_resource_month}</label>
+                    &nbsp;&nbsp;&nbsp;</td>
+            </tr>
+            <tr id="attime_report">
+                <td class="tdlabel">{lang report_attime}</td>
+                <td>
+                    <input id="at_time_report" name="at_time_report" type="text" class="easyui-timespinner input_length" data-options="min:'00:00',showSeconds:true,editable:true" value="00:00:00" /> &nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr id="weekday_report">
+                <td class="tdlabel" valign="top">{lang report_weekdays}</td>
+                <td colspan="3" style="padding-left:10px" valign="top">
+                    <input type="checkbox" name="weekday[]" id="one_report" value="mon" />{lang tree_resource_week1}
+                    <input style="margin-left:10px" type="checkbox" name="weekday[]" id="two_report" value="tue" />{lang tree_resource_week2}
+                    <input style="margin-left:10px" type="checkbox" name="weekday[]" id="three_report" value="wed" />{lang tree_resource_week3}
+                    <input style="margin-left:10px" type="checkbox" name="weekday[]" id="four_report" value="thu" />{lang tree_resource_week4}
+                    <br/>
+                    <input type="checkbox" name="weekday[]" id="five_report" value="fri" />{lang tree_resource_week5}
+                    <input style="margin-left:10px" type="checkbox" name="weekday[]" id="six_report" value="sat" />{lang tree_resource_week6}
+                    <input style="margin-left:10px" type="checkbox" name="weekday[]" id="seven_report" value="sun" />{lang tree_resource_week7}
+                </td>
+            </tr>
+            <tr id="monthday_report">
+                <td class="tdlabel" valign="top">{lang report_days}</td>
+                <td>
+                    <input id="monthday_value_report" name="monthday_value[]" style="height:40px" class="input_length" />
+                </td>
+            </tr>
+            <tr id="top_num">
+                <td class="tdlabel">{lang report_top_n}</td>
+                <td>
+                    <input id="report_top_n" name="report_top_n" class="input_length" />
+                </td>
+            </tr>
+            <tr id="start_time_report">
+                <td class="tdlabel">{lang report_start_time_stat}</td>
+                <td>
+                    <input id="dt_start_time_report" name="dt_start_time_report" class="easyui-datetimebox" style="width:180px">
+                </td>
+            </tr>
+            <tr id="end_time_report">
+                <td class="tdlabel">{lang report_end_time_stat}</td>
+                <td>
+                    <input id="dt_end_time_report" name="dt_end_time_report" class="easyui-datetimebox" style="width:180px">
+                </td>
+            </tr>
+            <!--
+                <tr id="report_treport">
+                    <td class="tdlabel">报表类型</td>
+                    <td>
+                        <input type="checkbox" id="report_type_pdf" name="report_type[]"  onclick="check_report()"value="pdf">pdf&nbsp;&nbsp;</input>
+                        <input type="checkbox" id="report_type_html" name="report_type[]" onclick="check_report()" value="html">html&nbsp;&nbsp;</input>-->
+            <!--<input type="checkbox" id="report_type_txt" name="report_type[]"  onclick="check_report()"value="txt" >txt&nbsp;&nbsp;</input>
+                        <input type="checkbox" id="report_type_xml" name="report_type[]"  onclick="check_report()"value="xml">xml</input>-->
+            <!--span id="report_s" style=" color:#989898;margin-left:47px;display:none">不能为空</span>
+                    </td>
+
+                </tr-->
+			 <tr>
+                <td class="tdlabel">{lang waf_server_type}</td>
+                <td>
+                    <input type="radio" name="server_policy_type" id="server_policy_single_report" value="single">
+                    <label for="server_policy_single_report">{lang waf_server_policy_single}</label>
+                    <input type="radio" name="server_policy_type" id="server_policy_all_report" value="all">
+                    <label for="server_policy_all_report">{lang waf_server_policy_all}</label>
+                </td>
+            </tr>
+			<tr id="server_policy_tr_report">
+                <td class="tdlabel">{lang waf_server}</td>
+                <td>
+                    <input name="server_policy" id="server_policy_report" class="input_length" />
+                </td>
+            </tr>
+            <tr id="report_lan">
+                <td class="tdlabel">{lang report_mail_language}</td>
+                <td>
+                    <input type="radio" name="report_lan" id="report_cn" value="chinese">
+                    <label for="report_cn">{lang chinese}</label>
+                    <input type="radio" name="report_lan" id="report_en" value="english">
+                    <label for="report_en">{lang english}</label>
+                </td>
+            </tr>
+            <tr class="email">
+                <td class="tdlabel"> {lang report_mail_title}</td>
+                <td>
+                    <input type="text" name="email_title" class="easyui-textbox input_length" id="email_title" data-options="validType:['length[0,127]']">&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr class="email">
+                <td class="tdlabel">{lang report_mail_content}</td>
+                <td>
+                    <input class="easyui-textbox input_length" data-options="multiline:true" style="height:80px" id="email_body" name="email_body">
+                </td>
+            </tr>
+            <tr class="email_en" style="display:none">
+                <td class="tdlabel"> {lang report_mail_title}</td>
+                <td>
+                    <input type="text" name="email_title_en" class="easyui-textbox input_length" id="email_title_en" data-options="validType:['length[0,127]']">&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr class="email_en" style="display:none">
+                <td class="tdlabel">{lang report_mail_content}</td>
+                <td>
+                    <input class="easyui-textbox input_length" data-options="multiline:true" style="height:80px" id="email_body_en" name="email_body_en">
+                </td>
+            </tr>
+            <tr>
+                <td class="tdlabel">{lang report_mail_policy}</td>
+                <td>
+                    <input name="mail_policy_report" id="mail_policy_report" class="input_length" style="height:22px;">
+                </td>
+            </tr>
+            <tr>
+                <td class="tdlabel"  valign="top">{lang report_module_choose}</td>
+                <td colspan="3" style="padding-left:10px" valign="top">
+                    <input type="checkbox" name="moduletype[]" id="module_attack_report" onclick="check_attack_module()" value="attack"/>{lang report_attack}<!-- -->
+                    <input style="margin-left:10px"type="checkbox" name="moduletype[]" id="module_ddos_report" value="ddos"/>DDOS
+                </td>
+            </tr>
+            <tr id="tr_attack_type">
+                <td class="tdlabel" vaign="top">{lang report_attack_rank}</td>
+                <td colspan="3" style="padding-left:10px" valign="top">
+                    <input type="checkbox" name="attacktype[]" id="type_eventtype_report" onClick="setenable_addRe()" value="event-type"/>{lang report_attack_event}
+                    <input style="margin-left:10px"type="checkbox" name="attacktype[]" id="type_source_report" onClick="setenable_addRe()" value="source"/>{lang report_attack_source}
+                    <input style="margin-left:10px"type="checkbox" name="attacktype[]" id="type_ruleid_report" onClick="setenable_addRe()" value="rule-id"/>{lang report_rule_hit}<br/>
+                    <input type="checkbox" name="attacktype[]" id="type_urlattack_report" onClick="setenable_addRe()" value="URL-attack"/>{lang report_url_times}
+                    <input style="margin-left:10px"type="checkbox" name="attacktype[]" id="type_action_report" onClick="setenable_addRe()" value="action"/>{lang report_action}
+                </td>
+            </tr>
+        </table>
+        <div class="waf_foot_btn">
+            <input type="submit" class="ngtos_button_middle" value="{lang but_confirm}" id='addRe'>
+            <input type="reset" class="ngtos_button_middle" value="{lang but_cancel}" onClick="$('#wwreport').window('close');" style="margin-left:10px">
+        </div>
+    </form>
+</div>
